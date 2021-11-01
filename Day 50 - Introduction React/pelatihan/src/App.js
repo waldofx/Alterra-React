@@ -5,7 +5,7 @@ import Home from "./Home";
 
 function App() {
     return (
-        <div className="App home">
+        <div className="App">
             <Navbar />
             <Home />
             {/* <header className="App-header">
