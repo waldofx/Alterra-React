@@ -1,0 +1,7 @@
+.card {
+    width: fit-content;
+    margin: 15px;
+    padding: 0 10px;
+    border: 2px solid black;
+    border-radius: 30px;
+}
