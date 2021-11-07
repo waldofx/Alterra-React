@@ -225,4 +225,11 @@ p {
         padding-right: 15px;
         padding-top: 110px;
     }
+
+    .home,
+    .about-app,
+    .about-author {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
 }
