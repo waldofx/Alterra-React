@@ -55,5 +55,5 @@ input[type="submit"]:hover {
 .errorMessage {
     color: red;
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
 }
