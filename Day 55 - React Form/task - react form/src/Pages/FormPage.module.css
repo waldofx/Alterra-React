@@ -1,0 +1,83 @@
+.container {
+    /* border: 1px solid black; */
+    width: 70%;
+    margin: 1% auto;
+    padding: 2rem;
+    /* background-color: lightblue; */
+    /* color: rgb(50, 43, 97); */
+}
+
+.container h1 {
+    margin: 0;
+    margin-bottom: 1rem;
+}
+
+.formControl {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}
+
+.formControl label {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.formControl input {
+    font-size: 16px;
+    padding: 0.3rem;
+}
+
+.formControl input[type="file"] {
+    width: fit-content;
+}
+.formControl select {
+    font-size: 16px;
+    padding: 0.5rem;
+}
+.error {
+    color: red;
+    font-size: 16px;
+    margin: 0;
+}
+
+.formControl input[select] {
+    padding: 2rem;
+}
+.actions {
+    margin-top: 15px;
+}
+.actions button {
+    font-size: 16px;
+    padding: 0.5rem 2rem;
+    margin-right: 10px;
+    border: none;
+    color: whitesmoke;
+    border-radius: 5px;
+}
+
+.actions .submit {
+    border-radius: 1px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: green;
+    background-color: green;
+}
+
+.actions .reset {
+    border-radius: 1px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: red;
+    background-color: red;
+}
+
+.actions .submit:hover {
+    background: transparent;
+    color: green;
+}
+
+.actions .reset:hover {
+    background: transparent;
+    color: red;
+}
