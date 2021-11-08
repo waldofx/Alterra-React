@@ -81,25 +81,19 @@ function FormCodingBootcamp() {
         let isValid = true;
         // nama
         if (!regexCharacters.test(data.nama)) {
-            setError(
-                "nama",
-                "Name can only contain lowercase and uppercase characters!"
-            );
+            setError("nama", "Nama Lengkap Harus Berupa Huruf!");
             isValid = false;
         } else if (data.nama.trim().length === 0) {
-            setError("nama", "Name must be at least 3 characters length!");
+            setError("nama", "Nama tidak boleh kosong!");
             isValid = false;
         }
 
         // email
         if (!data.email.includes("@")) {
-            setError("email", "Please enter valid email address (includes @)!");
+            setError("email", "Email tidak sesuai (kurang @)!");
             isValid = false;
         } else if (!data.email.includes(".")) {
-            setError(
-                "name",
-                "Please enter valid email address (includes domain)!"
-            );
+            setError("email", "Email tidak sesuai (kurang domain)!!");
             isValid = false;
         }
         console.log(data.handphone);
@@ -107,28 +101,25 @@ function FormCodingBootcamp() {
         // handphone
         if (data.handphone.trim().length === 0) {
             console.log("atas");
-            setError("handphone", "This field can't be empty!");
+            setError("handphone", "No. HP tidak boleh kosong!");
             isValid = false;
         } else if (
             data.handphone.length > 0 &&
             !regexNumbers.test(data.handphone)
         ) {
-            setError(
-                "handphone",
-                "Please ebnter a valid phone number (only contain numbers)!"
-            );
+            setError("handphone", "No Handphone Tidak Sesuai (hanya angka)!");
             isValid = false;
         } else if (data.handphone.length < 9 || data.handphone.length > 14) {
             setError(
                 "hanphone",
-                "Please enter a valid phone number (must be at 9-14 character length)!"
+                "No Handphone Tidak Sesuai (wajib 9-14 character length)!"
             );
             isValid = false;
         }
 
         // pendidikan
         if (data.pendidikan === "") {
-            setError("pendidikan", "Please choose one of the option!");
+            setError("pendidikan", "Tolong pilih salah satu!");
             isValid = false;
         }
 
