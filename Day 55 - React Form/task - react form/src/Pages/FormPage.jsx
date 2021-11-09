@@ -214,7 +214,7 @@ function FormCodingBootcamp() {
                 </div>
                 <div className={style.formControl}>
                     <label>Foto Surat Kesungguhan:</label>
-                    <input ref={photoRef} name="foto" type="file" />
+                    <input ref={photoRef} name="foto" type="file" required />
                     <p className={style.error}>{}</p>
                 </div>
                 <div className={style.formControl}>
