@@ -1,0 +1,6 @@
+Task Deployment:
+https://taskdeploy-waldofelix.netlify.app/
+
+
+Todo App:
+https://waldofx-todoapp.netlify.app/
