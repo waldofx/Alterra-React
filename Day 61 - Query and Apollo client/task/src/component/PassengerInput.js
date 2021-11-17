@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Home.css";
 
 function PassengerInput(props) {
+    const { nama, umur, jenis_kelamin, id } = props.data;
     const [state, setState] = useState({
         nama: "",
         umur: "",
-        jenisKelamin: "Pria",
+        jenis_kelamin: "Pria",
         editing: true,
     });
 
@@ -17,7 +18,7 @@ function PassengerInput(props) {
     };
 
     const handleSubmit = (e) => {
-        if (state.nama.trim() && state.umur && state.jenisKelamin) {
+        if (state.nama.trim() && state.umur && state.jenis_kelamin) {
             const umur = state.umur;
             if (umur >= 75 || umur <= 12) {
                 alert("Umur tidak sesuai");
@@ -25,14 +26,39 @@ function PassengerInput(props) {
                 const newData = {
                     nama: state.nama,
                     umur: state.umur,
-                    jenisKelamin: state.jenisKelamin,
+                    jenis_kelamin: state.jenis_kelamin,
                 };
-                props.tambahPengunjung(newData);
+                props.onAdd(newData);
                 setState({
                     ...state,
                     nama: "",
                     umur: "",
-                    jenisKelamin: "Pria",
+                    jenis_kelamin: "Pria",
+                });
+            }
+        } else {
+            alert("Data masih ada yang kosong");
+        }
+    };
+
+    const handleUpdate = () => {
+        if (state.nama.trim() && state.umur && state.jenis_kelamin) {
+            const umur = state.umur;
+            if (umur >= 75 || umur <= 12) {
+                alert("Umur tidak sesuai");
+            } else {
+                const newData = {
+                    id: id,
+                    nama: state.nama,
+                    umur: state.umur,
+                    jenis_kelamin: state.jenis_kelamin,
+                };
+                props.onUpdate(newData);
+                setState({
+                    ...state,
+                    nama: "",
+                    umur: "",
+                    jenis_kelamin: "Pria",
                 });
             }
         } else {
@@ -53,6 +79,19 @@ function PassengerInput(props) {
             editing: true,
         });
     };
+
+    useEffect(() => {
+        setState((prev) => {
+            return { ...prev, nama, umur, jenis_kelamin };
+        });
+    }, [nama, umur, jenis_kelamin]);
+
+    useEffect(() => {
+        console.log("effect");
+        setState((prev) => {
+            return { ...prev, editing: props.isOpen };
+        });
+    }, [props.isOpen]);
 
     let viewMode = {};
     let editMode = {};
@@ -86,14 +125,17 @@ function PassengerInput(props) {
                 />
                 <p>Masukkan Jenis Kelamin Anda</p>
                 <select
-                    value={state.jenisKelamin}
+                    value={state.jenis_kelamin}
                     onChange={onChange}
-                    name="jenisKelamin"
+                    name="jenis_kelamin"
                 >
                     <option value="Pria">Pria</option>
                     <option value="Wanita">Wanita</option>
                 </select>
                 <p></p>
+                <button onClick={handleUpdate} style={{ marginRight: "10px" }}>
+                    Update
+                </button>
                 <button onClick={handleSubmit}>Submit</button>
                 <button
                     onClick={handleTutupInput}

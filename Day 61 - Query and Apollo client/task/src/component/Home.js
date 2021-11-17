@@ -1,85 +1,79 @@
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import PassengerInput from "./PassengerInput";
 import ListPassenger from "./ListPassenger";
 import Header from "./Header";
-import { useQuery, useLazyQuery, gql } from "@apollo/client";
+import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import LoadingSvg from "./LoadingSvg";
-
-const GetAllPassengers = gql`
-    query MyQuery {
-        anggota {
-            jenis_kelamin
-            id
-            nama
-            umur
-        }
-    }
-`;
-
-const GetSinglePassenger = gql`
-    query MyQuery($id: Int!) {
-        anggota(where: { id: { _eq: $id } }) {
-            id
-            jenis_kelamin
-            nama
-            umur
-        }
-    }
-`;
-
-const GetPassengerAge = gql`
-    query MyQuery($umur: Int!) {
-        anggota(where: { umur: { _eq: $umur } }) {
-            id
-            jenis_kelamin
-            nama
-            umur
-        }
-    }
-`;
-
-const GetPassengerName = gql`
-    query MyQuery($nama: String!) {
-        anggota(where: { nama: { _eq: $nama } }) {
-            id
-            jenis_kelamin
-            nama
-            umur
-        }
-    }
-`;
+import SearchId from "./SearchId";
+import SearchName from "./SearchName";
+import SearchGender from "./SearchGender";
+import SearchAge from "./SearchAge";
+import {
+    GetAllPassengers,
+    GetPassengersByGender,
+    GetPassengersByAge,
+    GetPassengersByName,
+    GetSinglePassenger,
+} from "../Graphql/query";
+import {
+    DeletePassengers,
+    InsertPassengers,
+    UpdatePassengers,
+} from "../Graphql/mutation";
 
 function Home() {
     const [
-        getData,
-        { data: singleData, loading: loadingSingleData, errorSingleData },
+        getDataById,
+        { data: dataById, loading: loadingSingleData, errorSingleData },
     ] = useLazyQuery(GetSinglePassenger);
-    const [
-        getAgeData,
-        {
-            data: singleAgeData,
-            loading: loadingSingleAgeData,
-            errorSingleAgeData,
-        },
-    ] = useLazyQuery(GetPassengerAge);
-    const [
-        getNameData,
-        {
-            data: singleNameData,
-            loading: loadingSingleNameData,
-            errorSingleNameData,
-        },
-    ] = useLazyQuery(GetPassengerName);
     const {
         data: allData,
         loading: loadingAllData,
         error: errorAllData,
     } = useQuery(GetAllPassengers);
-    const [value, setValue] = useState(0);
-    // const [nama, setNama] = useState(0);
-    // const [umur, setUmur] = useState("");
+    const [
+        getDataByGender,
+        {
+            data: dataByGender,
+            loading: loadingDataByGender,
+            error: errorDataByGender,
+        },
+    ] = useLazyQuery(GetPassengersByGender);
+    const [
+        getDataByAge,
+        { data: dataByAge, loading: loadingDataByAge, error: errorDataByAge },
+    ] = useLazyQuery(GetPassengersByAge);
+    const [
+        getDataByName,
+        {
+            data: dataByName,
+            loading: loadingDataByName,
+            error: errorDataByName,
+        },
+    ] = useLazyQuery(GetPassengersByName);
+    const [deletePassengers, { loading: loadingDelete }] = useMutation(
+        DeletePassengers,
+        { refetchQueries: [GetAllPassengers] }
+    );
+    const [insertPassengers, { loading: loadingInsert }] = useMutation(
+        InsertPassengers,
+        { refetchQueries: [GetAllPassengers] }
+    );
+    const [updatePassengers, { loading: loadingUpdate }] = useMutation(
+        UpdatePassengers,
+        { refetchQueries: [GetAllPassengers] }
+    );
     const [passengers, setPassengers] = useState([]);
+    const [search, setSearch] = useState("id");
+    const [openInput, setOpenInput] = useState(true);
+    const [inputData, setInputData] = useState({
+        nama: "",
+        umur: "",
+        jenisKelamin: "Pria",
+    });
+    function changeSearch(indetifier) {
+        setSearch(indetifier);
+    }
 
     useEffect(() => {
         if (allData) {
@@ -88,84 +82,157 @@ function Home() {
     }, [allData]);
 
     useEffect(() => {
-        if (singleData) {
-            setPassengers(singleData.anggota);
+        if (dataById) {
+            setPassengers(dataById.anggota);
         }
-    }, [singleData]);
+    }, [dataById]);
 
     useEffect(() => {
-        if (singleAgeData) {
-            setPassengers(singleAgeData.anggota);
+        if (dataByGender) {
+            setPassengers(dataByGender.anggota);
         }
-    }, [singleAgeData]);
+    }, [dataByGender]);
 
     useEffect(() => {
-        if (singleNameData) {
-            setPassengers(singleNameData.anggota);
+        if (dataByAge) {
+            setPassengers(dataByAge.anggota);
         }
-    }, [singleNameData]);
+    }, [dataByAge]);
 
+    useEffect(() => {
+        console.log("masuk effect");
+        if (dataByName) {
+            console.log("masuk if nih");
+            setPassengers(dataByName.anggota);
+        }
+    }, [dataByName]);
+    console.log(dataByName);
     const showAllData = () => {
         setPassengers(allData.anggota);
     };
 
-    const HandlerId = () => {
-        getData({
+    const clickHandler = (name, identifier) => {
+        console.log(name, identifier);
+        if (name === "id") {
+            getDataById({
+                variables: {
+                    id: identifier,
+                },
+            });
+        }
+
+        if (name === "age") {
+            console.log("masuk age");
+            getDataByAge({
+                variables: {
+                    age: identifier,
+                },
+            });
+        }
+
+        if (name === "name") {
+            console.log("name ++ ", identifier);
+            getDataByName({
+                variables: {
+                    name: identifier,
+                },
+            });
+        }
+
+        if (name === "gender") {
+            console.log("masuk if");
+            getDataByGender({
+                variables: {
+                    gender: identifier,
+                },
+            });
+        }
+    };
+
+    const deleteHandler = (id) => {
+        deletePassengers({
             variables: {
-                id: value,
+                id: id,
             },
         });
     };
 
-    const HandlerNama = () => {
-        getNameData({
+    const updateHandler = (data) => {
+        updatePassengers({
             variables: {
-                nama: value,
+                id: data.id,
+                jenis_kelamin: data.jenis_kelamin,
+                nama: data.nama,
+                umur: data.umur,
             },
         });
     };
 
-    const HandlerUmur = () => {
-        getAgeData({
+    const insertHandler = (object) => {
+        insertPassengers({
             variables: {
-                umur: value,
+                object: object,
             },
         });
     };
 
-    if (errorSingleData || errorAllData) {
-        return <p>Something Went Wrong...</p>;
-    }
+    const editHandler = (data) => {
+        setOpenInput(false);
+        setInputData(data);
+    };
+
+    const isError =
+        errorSingleData ||
+        errorAllData ||
+        errorDataByGender ||
+        errorDataByAge ||
+        errorDataByName;
+    const isLoading =
+        loadingAllData ||
+        loadingSingleData ||
+        loadingDataByGender ||
+        loadingDataByAge ||
+        loadingDataByName ||
+        loadingDelete ||
+        loadingInsert ||
+        loadingUpdate;
 
     return (
         <div>
             <Header />
-            <input value={value} onChange={(e) => setValue(e.target.value)} />
-            <button style={{ marginBottom: "20px" }} onClick={HandlerId}>
-                Search By ID
-            </button>
-            <button style={{ marginBottom: "20px" }} onClick={HandlerNama}>
-                Search By Name
-            </button>
-            <button style={{ marginBottom: "20px" }} onClick={HandlerUmur}>
-                Search By Age
-            </button>
+            <div>
+                <button onClick={() => changeSearch("id")}>Search by id</button>
+                <button onClick={() => changeSearch("name")}>
+                    Search by name
+                </button>
+                <button onClick={() => changeSearch("age")}>
+                    Search by age
+                </button>
+                <button onClick={() => changeSearch("gender")}>
+                    Search by gender
+                </button>
+            </div>
+            {search === "id" && <SearchId onClick={clickHandler} />}
+            {search === "name" && <SearchName onClick={clickHandler} />}
+            {search === "age" && <SearchAge onClick={clickHandler} />}
+            {search === "gender" && <SearchGender onClick={clickHandler} />}
             <button onClick={showAllData}>Show All</button>
-            {errorAllData && <p>Something Went Wrong...</p>}
-            {(loadingAllData ||
-                loadingSingleData ||
-                loadingSingleAgeData ||
-                loadingSingleNameData) && (
-                <div className="center">
-                    <LoadingSvg />
-                </div>
+            {isError && <p>Something Went Wrong...</p>}
+            {isLoading && <LoadingSvg />}
+            {!isError && !isLoading && (
+                <ListPassenger
+                    onEdit={editHandler}
+                    onUpdate={updateHandler}
+                    onDelete={deleteHandler}
+                    data={passengers}
+                />
             )}
-            {!errorAllData &&
-                !loadingAllData &&
-                !loadingSingleData &&
-                !loadingSingleAgeData &&
-                !loadingSingleNameData && <ListPassenger data={passengers} />}
-            <PassengerInput />
+            <PassengerInput
+                onUpdate={updateHandler}
+                onAdd={insertHandler}
+                data={inputData}
+                isOpen={openInput}
+            />
         </div>
     );
 }

@@ -1,5 +1,8 @@
 import ListItem from "./ListItem";
 const ListPassenger = (props) => {
+    if (props.data.length === 0) {
+        return <p>Not Found</p>;
+    }
     return (
         <div>
             <table cellPadding="5px" cellSpacing="0" style={{ margin: "auto" }}>
@@ -16,7 +19,8 @@ const ListPassenger = (props) => {
                         <ListItem
                             key={item.id}
                             data={item}
-                            hapusPengunjung={props.hapusPengunjung}
+                            onEdit={props.onEdit}
+                            hapusPengunjung={props.onDelete}
                         />
                     ))}
                 </tbody>

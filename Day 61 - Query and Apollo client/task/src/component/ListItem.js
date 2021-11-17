@@ -1,7 +1,14 @@
 import "./Home.css";
 const ListItem = (props) => {
     const { id, nama, umur, jenis_kelamin } = props.data;
-
+    const editHandler = () => {
+        props.onEdit({
+            nama,
+            umur,
+            jenis_kelamin,
+            id,
+        });
+    };
     return (
         <tr>
             <td>{nama}</td>
@@ -12,6 +19,9 @@ const ListItem = (props) => {
                 onClick={() => props.hapusPengunjung(id)}
             >
                 <button>Hapus</button>
+            </td>
+            <td className="removeBorder" onClick={editHandler}>
+                <button>Edit</button>
             </td>
         </tr>
     );
