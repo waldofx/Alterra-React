@@ -1,5 +1,4 @@
-tr,
-td {
+tr,td {
     border: 1px solid black;
 }
 
@@ -9,10 +8,4 @@ td {
 
 .inputan {
     margin-top: 25px;
-}
-
-.center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
