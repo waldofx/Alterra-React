@@ -1,68 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
-import { gql, useQuery, useLazyQuery, useMutation } from "@apollo/client";
 
 import Todo from "components/Todo";
 import LoadingSvg from "components/LoadingSvg";
-
-const GetTodoList = gql`
-    query MyQuery {
-        todolist {
-            id
-            is_done
-            title
-        }
-    }
-`;
-
-// const getTodoListByUserId = gql`
-//   query MyQuery($user_id: Int!) {
-//     todolist(where: {user_id: {_eq: $user_id}}) {
-//       id
-//       title
-//       is_done
-//     }
-//   }
-// `
-
-const UpdateTodo = gql`
-    mutation MyMutation($id: Int!, $is_done: Boolean) {
-        update_todolist_by_pk(
-            pk_columns: { id: $id }
-            _set: { is_done: $is_done }
-        ) {
-            id
-        }
-    }
-`;
-
-const DeleteTodo = gql`
-    mutation MyMutation2($id: Int!) {
-        delete_todolist_by_pk(id: $id) {
-            id
-        }
-    }
-`;
-const InsertTodo = gql`
-    mutation MyMutation3($object: todolist_insert_input!) {
-        insert_todolist_one(object: $object) {
-            id
-        }
-    }
-`;
+import useUpdateTodo from "hooks/useUpdateTodo";
+import useDeleteTodo from "hooks/useDeleteTodo";
+import useInsertTodo from "hooks/useInsertTodo";
+import useGetTodo from "hooks/useGetTodo";
 
 function TodoList() {
-    const { data, loading, error } = useQuery(GetTodoList);
+    // Subscription
+    // const {data, loading, error} = useSubscribeTodo();
+    const { todolist, loading, error, subscribeTodo } = useGetTodo();
     // const [getTodo, {data, loading, error}] = useLazyQuery(getTodoListByUserId);
-    const [updateTodo, { loading: loadingUpdate }] = useMutation(UpdateTodo, {
-        refetchQueries: [GetTodoList],
-    });
-    const [deleteTodo, { loading: loadingDelete }] = useMutation(DeleteTodo, {
-        refetchQueries: [GetTodoList],
-    });
-    const [insertTodo, { loading: loadingInsert }] = useMutation(InsertTodo, {
-        refetchQueries: [GetTodoList],
-    });
+    // Mutation
+    const { updateTodo, loadingUpdate } = useUpdateTodo();
+    const { deleteTodo, loadingDelete } = useDeleteTodo();
+    const { insertTodo, loadingInsert } = useInsertTodo();
+
+    // useEffect untuk memanggil subscribeTodo(Ln14)
+    useEffect(() => {
+        subscribeTodo();
+    }, []);
+
     // const [userId, setUserId] = useState(0);
     const [list, setList] = useState([]);
     const [title, setTitle] = useState("");
@@ -98,7 +58,7 @@ function TodoList() {
 
     // Update is_done Todo
     const onClickItem = (idx) => {
-        const item = data?.todolist.find((v) => v.id === idx);
+        const item = todolist.find((v) => v.id === idx);
         updateTodo({
             variables: {
                 id: idx,
@@ -136,7 +96,7 @@ function TodoList() {
         <button onClick={onGetData}>Get data</button> */}
                 <h1 className="app-title">todos</h1>
                 <ul className="todo-list js-todo-list">
-                    {data?.todolist.map((v) => (
+                    {todolist.map((v) => (
                         <Todo
                             key={v.id}
                             id={v.id}
