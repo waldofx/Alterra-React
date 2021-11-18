@@ -2,67 +2,42 @@ import { useEffect, useState } from "react";
 import PassengerInput from "./PassengerInput";
 import ListPassenger from "./ListPassenger";
 import Header from "./Header";
-import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import LoadingSvg from "./LoadingSvg";
 import SearchId from "./SearchId";
 import SearchName from "./SearchName";
 import SearchGender from "./SearchGender";
 import SearchAge from "./SearchAge";
-import {
-    GetAllPassengers,
-    GetPassengersByGender,
-    GetPassengersByAge,
-    GetPassengersByName,
-    GetSinglePassenger,
-} from "../Graphql/query";
-import {
-    DeletePassengers,
-    InsertPassengers,
-    UpdatePassengers,
-} from "../Graphql/mutation";
+import useSubscriptionPassengers from "../Hooks/useSubscriptionPassengers";
+import useGetPassengersByGender from "../Hooks/useGetDataByGender";
+import useGetPassengersByAge from "../Hooks/useGetDataByAge";
+import useGetPassengersByName from "../Hooks/useGetDataByName";
+import useGetDataById from "../Hooks/useGetDataById";
+import useDeletePassenger from "../Hooks/useDeletePassenger";
+import useInsertPassenger from "../Hooks/useInsertPassenger";
+import useUpdatePassenger from "../Hooks/useUpdatePassenger";
 
 function Home() {
-    const [
-        getDataById,
-        { data: dataById, loading: loadingSingleData, errorSingleData },
-    ] = useLazyQuery(GetSinglePassenger);
+    // ----------------- custom hook graphql -------------------------
+    const { getDataById, dataById, loadingSingleData, errorSingleData } =
+        useGetDataById();
+    const { allData, errorAllData, loadingAllData } =
+        useSubscriptionPassengers();
     const {
-        data: allData,
-        loading: loadingAllData,
-        error: errorAllData,
-    } = useQuery(GetAllPassengers);
-    const [
         getDataByGender,
-        {
-            data: dataByGender,
-            loading: loadingDataByGender,
-            error: errorDataByGender,
-        },
-    ] = useLazyQuery(GetPassengersByGender);
-    const [
-        getDataByAge,
-        { data: dataByAge, loading: loadingDataByAge, error: errorDataByAge },
-    ] = useLazyQuery(GetPassengersByAge);
-    const [
-        getDataByName,
-        {
-            data: dataByName,
-            loading: loadingDataByName,
-            error: errorDataByName,
-        },
-    ] = useLazyQuery(GetPassengersByName);
-    const [deletePassengers, { loading: loadingDelete }] = useMutation(
-        DeletePassengers,
-        { refetchQueries: [GetAllPassengers] }
-    );
-    const [insertPassengers, { loading: loadingInsert }] = useMutation(
-        InsertPassengers,
-        { refetchQueries: [GetAllPassengers] }
-    );
-    const [updatePassengers, { loading: loadingUpdate }] = useMutation(
-        UpdatePassengers,
-        { refetchQueries: [GetAllPassengers] }
-    );
+        dataByGender,
+        errorDataByGender,
+        loadingDataByGender,
+    } = useGetPassengersByGender();
+    const { getDataByAge, dataByAge, errorDataByAge, loadingDataByAge } =
+        useGetPassengersByAge();
+    const { getDataByName, dataByName, loadingDataByName, errorDataByName } =
+        useGetPassengersByName();
+    const { deletePassenger, loadingDelete } = useDeletePassenger();
+    const { insertPassengers, loadingInsert } = useInsertPassenger();
+    const { updatePassenger, loadingUpdate } = useUpdatePassenger();
+    // ----------------- custom hook graphql -------------------------
+
+    // ----------------- state -------------------
     const [passengers, setPassengers] = useState([]);
     const [search, setSearch] = useState("id");
     const [openInput, setOpenInput] = useState(true);
@@ -71,10 +46,9 @@ function Home() {
         umur: "",
         jenisKelamin: "Pria",
     });
-    function changeSearch(indetifier) {
-        setSearch(indetifier);
-    }
+    // ----------------- state -------------------
 
+    // ----------------- side effect -------------
     useEffect(() => {
         if (allData) {
             setPassengers(allData.anggota);
@@ -106,7 +80,13 @@ function Home() {
             setPassengers(dataByName.anggota);
         }
     }, [dataByName]);
-    console.log(dataByName);
+    // ----------------- side effect -------------
+
+    // ----------------- handler function -------------------
+    const changeSearch = (indetifier) => {
+        setSearch(indetifier);
+    };
+
     const showAllData = () => {
         setPassengers(allData.anggota);
     };
@@ -150,7 +130,7 @@ function Home() {
     };
 
     const deleteHandler = (id) => {
-        deletePassengers({
+        deletePassenger({
             variables: {
                 id: id,
             },
@@ -158,7 +138,7 @@ function Home() {
     };
 
     const updateHandler = (data) => {
-        updatePassengers({
+        updatePassenger({
             variables: {
                 id: data.id,
                 jenis_kelamin: data.jenis_kelamin,
@@ -180,7 +160,9 @@ function Home() {
         setOpenInput(false);
         setInputData(data);
     };
+    // ----------------- handler function -------------------
 
+    // ----------------- error & loading state ----------------
     const isError =
         errorSingleData ||
         errorAllData ||
@@ -196,6 +178,7 @@ function Home() {
         loadingDelete ||
         loadingInsert ||
         loadingUpdate;
+    // ----------------- error & loading state ----------------
 
     return (
         <div>
