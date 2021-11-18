@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-const DeletePassengers = gql`
+const DeletePassenger = gql`
     mutation MyMutation($id: Int!) {
         delete_anggota_by_pk(id: $id) {
             id
@@ -8,7 +8,7 @@ const DeletePassengers = gql`
     }
 `;
 
-const InsertPassengers = gql`
+const InsertPassenger = gql`
     mutation MyMutation($object: anggota_insert_input!) {
         insert_anggota_one(object: $object) {
             id
@@ -16,7 +16,7 @@ const InsertPassengers = gql`
     }
 `;
 
-const UpdatePassengers = gql`
+const UpdatePassenger = gql`
     mutation MyMutation(
         $id: Int!
         $jenis_kelamin: String!
@@ -32,4 +32,4 @@ const UpdatePassengers = gql`
     }
 `;
 
-export { DeletePassengers, InsertPassengers, UpdatePassengers };
+export { DeletePassenger, InsertPassenger, UpdatePassenger };
