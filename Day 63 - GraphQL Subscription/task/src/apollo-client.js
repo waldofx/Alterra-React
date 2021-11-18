@@ -11,7 +11,7 @@ const httpLink = new HttpLink({
 });
 
 const wsLink = new WebSocketLink({
-    uri: "wss://kampus-merdeka-waldo.hasura.app/v1/graphqll",
+    uri: "wss://kampus-merdeka-waldo.hasura.app/v1/graphql",
     options: {
         reconnect: true,
         connectionParams: {
